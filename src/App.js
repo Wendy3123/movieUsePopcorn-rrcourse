@@ -50,12 +50,43 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-function NavBar() {
+export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
+  return (
+    <>
+      <NavBar>
+        <Search />
+        <NumResults movies={movies} />
+      </NavBar>
+      <Main>
+        {/* <Box element={<MovieList movies={movies} />} />
+        <Box
+          element={
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          }
+        /> */}
+        {/* SAME WAY ^^ BUT BY PASSING EXPLICIT PROPS INSTEAD OF CHILDREN */}
+        <Box>
+          <MovieList movies={movies} />
+        </Box>
+        <Box>
+          <WatchedSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </Box>
+      </Main>
+    </>
+  );
+}
+
+function NavBar({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search />
-      <NumResults />
+      {children}
     </nav>
   );
 }
@@ -69,11 +100,15 @@ function Logo() {
   );
 }
 
-function NumResults() {
+function Main({ children }) {
+  return <main className="main">{children}</main>;
+}
+
+function NumResults({ movies }) {
   return (
     //number of results that show after user search a specific movie
     <p className="num-results">
-      Found <strong>X</strong> results
+      Found <strong>{movies.length}</strong> results
     </p>
   );
 }
@@ -91,42 +126,23 @@ function Search() {
   );
 }
 
-function Main() {
-  return (
-    <main className="main">
-      <ListBox />
-      <WatchedBox />
-    </main>
-  );
-}
-
-export default function App() {
-  return (
-    <>
-      <NavBar />
-      <Main />
-    </>
-  );
-}
-
-function ListBox() {
-  const [isOpen1, setIsOpen1] = useState(true);
+function Box({ children }) {
+  //if we do it the explicit element way then replace this children with element instead
+  //element can be named anything and is a explicit prop to pass specific info
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
       </button>
-      {isOpen1 && <MovieList />}
+      {isOpen && children}
+      {/* if we did it the explicit elements way we need to replace the children with element */}
     </div>
   );
 }
 
-function MovieList() {
-  const [movies, setMovies] = useState(tempMovieData);
+function MovieList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
@@ -148,28 +164,6 @@ function Movie({ movie }) {
         </p>
       </div>
     </li>
-  );
-}
-
-function WatchedBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isOpen2, setIsOpen2] = useState(true);
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
-        </>
-      )}
-    </div>
   );
 }
 
